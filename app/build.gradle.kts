@@ -7,6 +7,12 @@ android {
     namespace = "com.example.hand4pal_android_mobile_app"
     compileSdk = 36
 
+    // AJOUTEZ CECI :
+    buildFeatures {
+        viewBinding = true
+    }
+
+
     defaultConfig {
         applicationId = "com.example.hand4pal_android_mobile_app"
         minSdk = 24
@@ -36,7 +42,13 @@ android {
 }
 
 dependencies {
-
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.4")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.4")
+    implementation("com.google.android.material:material:1.9.0")
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.logging.interceptor)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
