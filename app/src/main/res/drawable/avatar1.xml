@@ -1,6 +1,26 @@
-<?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="oval">
-    <solid android:color="#4CAF50" />
-    <size android:width="100dp" android:height="100dp" />
-</shape>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+android:width="100dp"
+android:height="100dp"
+android:viewportWidth="48"
+android:viewportHeight="48">
+
+<!-- Background -->
+<path
+    android:fillColor="#2196F3"
+    android:pathData="M24,0A24,24 0,1 1,0 24A24,24 0,0 1,24 0z"/>
+
+<!-- Hair -->
+<path
+    android:fillColor="#212121"
+    android:pathData="M24,8c-5,0 -7,3 -7,6v2h14v-2c0,-3 -2,-6 -7,-6z"/>
+
+<!-- Face -->
+<path
+    android:fillColor="#FFE0B2"
+    android:pathData="M24,10c-4,0 -6,3 -6,7s2,7 6,7 6,-3 6,-7 -2,-7 -6,-7z"/>
+
+<!-- Shoulders -->
+<path
+    android:fillColor="#FFFFFF"
+    android:pathData="M12,32c0,-5 6,-7 12,-7s12,2 12,7v6H12z"/>
+</vector>
