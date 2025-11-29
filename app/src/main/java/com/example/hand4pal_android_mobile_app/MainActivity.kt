@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
 
-        bottomNav = findViewById(R.id.bottomNav)
+        bottomNav = findViewById(R.id.bottom_navigation)
 
         // Set default fragment
         if (savedInstanceState == null) {
@@ -31,9 +31,9 @@ class MainActivity : AppCompatActivity() {
         bottomNav.setOnItemSelectedListener { item ->
             val fragment: Fragment = when (item.itemId) {
                 R.id.nav_home -> HomeFragment()
-                R.id.nav_campaigns -> CampaignsFragment()
+                R.id.nav_donation -> CampaignsFragment()
+                R.id.nav_campaign -> CampaignsFragment()
                 R.id.nav_profile -> ProfileFragment()
-                R.id.nav_settings -> SettingsFragment()
                 else -> HomeFragment()
             }
             loadFragment(fragment)
@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun loadFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
-            .replace(R.id.fragmentContainer, fragment)
+            .replace(R.id.fragment_container, fragment)
             .commit()
     }
 
