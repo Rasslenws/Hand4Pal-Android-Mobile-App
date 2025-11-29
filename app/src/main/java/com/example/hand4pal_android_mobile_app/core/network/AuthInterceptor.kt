@@ -1,29 +1,49 @@
 package com.example.hand4pal_android_mobile_app.core.network
 
-import com.example.hand4pal_android_mobile_app.features.auth.data.datasource.AuthLocalDataSource
+import android.content.Context
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Response
 
-class AuthInterceptor(private val localDataSource: AuthLocalDataSource) : Interceptor {
-
+class AuthInterceptor : Interceptor {
+    
+    companion object {
+        private var context: Context? = null
+        
+        fun init(appContext: Context) {
+            context = appContext.applicationContext
+        }
+    }
+    
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
-        val requestBuilder = originalRequest.newBuilder()
-
-        // Récupère le token depuis la DataSource
-        // runBlocking est utilisé ici car intercept() est synchrone mais DataStore est asynchrone.
-        // Si AuthLocalDataSource utilise SharedPreferences (synchrone), runBlocking est très rapide.
-        val token = runBlocking {
-            localDataSource.getToken()
+        
+        // Skip adding token for auth endpoints
+        if (originalRequest.url.encodedPath.contains("/auth/")) {
+            return chain.proceed(originalRequest)
         }
-
-        // Si un token existe, on l'ajoute dans le Header Authorization
-        if (!token.isNullOrEmpty()) {
-            requestBuilder.addHeader("Authorization", "Bearer $token")
+        
+        // Get token from DataStore using centralized key
+        val token = context?.let { ctx ->
+            runBlocking {
+                try {
+                    ctx.dataStore.data.first()[DataStoreKeys.TOKEN_KEY]
+                } catch (e: Exception) {
+                    null
+                }
+            }
         }
-
-        val request = requestBuilder.build()
-        return chain.proceed(request)
+        
+        // Add Authorization header if token exists
+        val newRequest = if (token != null) {
+            originalRequest.newBuilder()
+                .header("Authorization", "Bearer $token")
+                .build()
+        } else {
+            originalRequest
+        }
+        
+        return chain.proceed(newRequest)
     }
 }

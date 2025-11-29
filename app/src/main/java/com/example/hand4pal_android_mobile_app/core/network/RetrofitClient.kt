@@ -1,8 +1,7 @@
 package com.example.hand4pal_android_mobile_app.core.network
 
-import android.content.Context
-import com.example.hand4pal_android_mobile_app.features.auth.data.AuthApi // Notez le changement de package si vous avez déplacé AuthApi
-import com.example.hand4pal_android_mobile_app.features.auth.data.datasource.AuthLocalDataSource
+import com.example.hand4pal_android_mobile_app.features.auth.data.AuthApi
+import com.example.hand4pal_android_mobile_app.features.profile.data.ProfileApi
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -10,33 +9,26 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
+    private const val BASE_URL = "http://10.0.2.2:8081/"  // Android emulator localhost
 
-    // Use 10.0.2.2 for Android Emulator to access localhost
-    private const val BASE_URL = "http://10.0.2.2:8081/"
-
-    private fun provideOkHttpClient(localDataSource: AuthLocalDataSource): OkHttpClient {
-        val logging = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
-        }
-
-        return OkHttpClient.Builder()
-            .addInterceptor(AuthInterceptor(localDataSource)) // Utilise maintenant LocalDataSource
-            .addInterceptor(logging)
-            .connectTimeout(30, TimeUnit.SECONDS)
-            .readTimeout(30, TimeUnit.SECONDS)
-            .build()
+    private val loggingInterceptor = HttpLoggingInterceptor().apply {
+        level = HttpLoggingInterceptor.Level.BODY
     }
 
-    /**
-     * Crée l'instance de l'API.
-     * Nécessite AuthLocalDataSource pour configurer l'intercepteur.
-     */
-    fun getAuthApi(context: Context, localDataSource: AuthLocalDataSource): AuthApi {
-        return Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .client(provideOkHttpClient(localDataSource))
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(AuthApi::class.java)
-    }
+    private val okHttpClient = OkHttpClient.Builder()
+        .addInterceptor(loggingInterceptor)
+        .addInterceptor(AuthInterceptor())
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .writeTimeout(30, TimeUnit.SECONDS)
+        .build()
+
+    private val retrofit = Retrofit.Builder()
+        .baseUrl(BASE_URL)
+        .client(okHttpClient)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    val authApi: AuthApi = retrofit.create(AuthApi::class.java)
+    val profileApi: ProfileApi = retrofit.create(ProfileApi::class.java)
 }

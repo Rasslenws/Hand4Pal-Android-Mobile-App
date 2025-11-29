@@ -1,41 +1,46 @@
 package com.example.hand4pal_android_mobile_app.features.auth.data.datasource
 
 import android.content.Context
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
+import com.example.hand4pal_android_mobile_app.core.network.DataStoreKeys
+import com.example.hand4pal_android_mobile_app.core.network.dataStore
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
-// Extension pour créer le DataStore une seule fois
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "auth_prefs")
-
-class AuthLocalDataSource(private val context: Context) {
+class AuthLocalDataSource private constructor(private val context: Context) {
 
     companion object {
-        private val JWT_TOKEN_KEY = stringPreferencesKey("jwt_token")
-    }
+        @Volatile
+        private var INSTANCE: AuthLocalDataSource? = null
 
-    // Sauvegarde asynchrone
-    suspend fun saveToken(token: String) {
-        context.dataStore.edit { preferences ->
-            preferences[JWT_TOKEN_KEY] = token
+        fun getInstance(context: Context): AuthLocalDataSource {
+            return INSTANCE ?: synchronized(this) {
+                INSTANCE ?: AuthLocalDataSource(context.applicationContext).also {
+                    INSTANCE = it
+                }
+            }
         }
     }
 
-    // Lecture sous forme de Flow (Observateur)
-    val tokenFlow: Flow<String?> = context.dataStore.data
-        .map { preferences -> preferences[JWT_TOKEN_KEY] }
-
-    // Lecture directe (bloquante) pour l'Interceptor
-    suspend fun getToken(): String? {
-        return context.dataStore.data.map { it[JWT_TOKEN_KEY] }.first()
+    // Save token asynchronously
+    suspend fun saveToken(token: String) {
+        context.dataStore.edit { preferences ->
+            preferences[DataStoreKeys.TOKEN_KEY] = token
+        }
     }
 
+    // Flow for observing token changes
+    val tokenFlow: Flow<String?> = context.dataStore.data
+        .map { preferences -> preferences[DataStoreKeys.TOKEN_KEY] }
+
+    // Direct read for Interceptor
+    suspend fun getToken(): String? {
+        return context.dataStore.data.map { it[DataStoreKeys.TOKEN_KEY] }.first()
+    }
+
+    // Clear token
     suspend fun clearToken() {
-        context.dataStore.edit { it.remove(JWT_TOKEN_KEY) }
+        context.dataStore.edit { it.remove(DataStoreKeys.TOKEN_KEY) }
     }
 }

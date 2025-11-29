@@ -1,40 +1,63 @@
 package com.example.hand4pal_android_mobile_app.features.auth.presentation.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.hand4pal_android_mobile_app.features.auth.domain.* // Imports User, RegisterUserRequest
+import com.example.hand4pal_android_mobile_app.features.auth.domain.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
+class AuthViewModel(
+    private val repository: AuthRepository
+) : ViewModel() {
 
-    // State for Login
-    private val _loginState = MutableLiveData<Result<AuthResponse>>()
-    val loginState: LiveData<Result<AuthResponse>> = _loginState
+    private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)
+    val authState: StateFlow<AuthState> = _authState
 
-    // State for Register (Returns User object, NOT token)
-    private val _registerState = MutableLiveData<Result<User>>()
-    val registerState: LiveData<Result<User>> = _registerState
+    private val _loginResponse = MutableStateFlow<AuthResponse?>(null)
+    val loginResponse: StateFlow<AuthResponse?> = _loginResponse
 
-    fun login(email: String, pass: String) {
+    fun registerCitizen(request: RegisterCitizenRequest) {
         viewModelScope.launch {
-            val request = AuthRequest(email, pass)
-            repository.login(request).collect { result ->
-                _loginState.value = result
-            }
+            _authState.value = AuthState.Loading
+            repository.registerCitizen(request)
+                .onSuccess {
+                    _authState.value = AuthState.Success("Registration successful! Please login.")
+                }
+                .onFailure { error ->
+                    _authState.value = AuthState.Error(error.message ?: "Registration failed")
+                }
         }
     }
 
-    fun register(firstName: String, lastName: String, email: String, pass: String) {
+    fun registerAssociation(request: RegisterAssociationRequest) {
         viewModelScope.launch {
-            // Create the request object matching backend DTO
-            val request = RegisterUserRequest(firstName, lastName, email, pass)
-
-            // Call Repository
-            repository.register(request).collect { result ->
-                _registerState.value = result
-            }
+            _authState.value = AuthState.Loading
+            repository.registerAssociation(request)
+                .onSuccess {
+                    _authState.value = AuthState.Success("Association registration submitted! Awaiting approval. You can login once approved.")
+                }
+                .onFailure { error ->
+                    _authState.value = AuthState.Error(error.message ?: "Registration failed")
+                }
         }
+    }
+
+    fun login(request: LoginRequest) {
+        viewModelScope.launch {
+            _authState.value = AuthState.Loading
+            repository.login(request)
+                .onSuccess { response ->
+                    _loginResponse.value = response
+                    _authState.value = AuthState.Success("Login successful")
+                }
+                .onFailure { error ->
+                    _authState.value = AuthState.Error(error.message ?: "Login failed")
+                }
+        }
+    }
+
+    fun resetState() {
+        _authState.value = AuthState.Idle
     }
 }

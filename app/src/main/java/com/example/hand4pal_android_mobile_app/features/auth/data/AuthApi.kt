@@ -6,17 +6,19 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface AuthApi {
-
-    // Endpoint: /auth/login
-    @POST("auth/login")
-    suspend fun login(@Body request: AuthRequest): Response<AuthResponse>
-
-    // Endpoint: /auth/register/citizen
-    // Returns User, NOT token
+    
     @POST("auth/register/citizen")
-    suspend fun registerCitizen(@Body request: RegisterUserRequest): Response<User>
-
-    // Endpoint: /auth/google
-    @POST("auth/google")
-    suspend fun googleAuth(@Body request: GoogleTokenRequest): Response<AuthResponse>
+    suspend fun registerCitizen(
+        @Body request: RegisterCitizenRequest
+    ): Response<UserResponse>
+    
+    @POST("auth/register/association")
+    suspend fun registerAssociation(
+        @Body request: RegisterAssociationRequest
+    ): Response<AssociationRequestResponse>
+    
+    @POST("auth/login")
+    suspend fun login(
+        @Body request: LoginRequest
+    ): Response<AuthResponse>
 }
