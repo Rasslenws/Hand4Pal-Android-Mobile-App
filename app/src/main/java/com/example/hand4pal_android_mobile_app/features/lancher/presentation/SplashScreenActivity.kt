@@ -10,6 +10,7 @@ import com.example.hand4pal_android_mobile_app.MainActivity
 import com.example.hand4pal_android_mobile_app.R
 import com.example.hand4pal_android_mobile_app.core.network.AuthInterceptor
 import com.example.hand4pal_android_mobile_app.core.network.DataStoreKeys
+import com.example.hand4pal_android_mobile_app.core.network.RetrofitClient
 import com.example.hand4pal_android_mobile_app.core.network.dataStore
 import com.example.hand4pal_android_mobile_app.features.auth.presentation.AuthActivity
 import kotlinx.coroutines.flow.first
@@ -22,8 +23,7 @@ class SplashScreenActivity : AppCompatActivity() {
         setContentView(R.layout.activity_splash_screen)
 
         // Initialize AuthInterceptor with context
-        AuthInterceptor.init(this)
-
+        RetrofitClient.init(applicationContext)
         // Check if user is logged in after 2 seconds
         Handler(Looper.getMainLooper()).postDelayed({
             lifecycleScope.launch {

@@ -1,49 +1,63 @@
+// core/network/AuthInterceptor.kt
 package com.example.hand4pal_android_mobile_app.core.network
 
 import android.content.Context
-import kotlinx.coroutines.flow.first
+import android.content.Intent
+import com.example.hand4pal_android_mobile_app.features.auth.presentation.AuthActivity
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Response
+import java.util.concurrent.atomic.AtomicBoolean
 
-class AuthInterceptor : Interceptor {
-    
+class AuthInterceptor(
+    private val context: Context, // Needed to start Activity
+    private val dataStoreManager: DataStoreManager
+) : Interceptor {
+
     companion object {
-        private var context: Context? = null
-        
-        fun init(appContext: Context) {
-            context = appContext.applicationContext
-        }
+        // Prevents opening multiple Login screens if multiple requests fail at once
+        private val isLoggingOut = AtomicBoolean(false)
     }
-    
+
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
-        
-        // Skip adding token for auth endpoints
+
+        // 1. Skip auth endpoints
         if (originalRequest.url.encodedPath.contains("/auth/")) {
             return chain.proceed(originalRequest)
         }
-        
-        // Get token from DataStore using centralized key
-        val token = context?.let { ctx ->
-            runBlocking {
-                try {
-                    ctx.dataStore.data.first()[DataStoreKeys.TOKEN_KEY]
-                } catch (e: Exception) {
-                    null
-                }
-            }
-        }
-        
-        // Add Authorization header if token exists
-        val newRequest = if (token != null) {
+
+        // 2. Add Token Header
+        val token = runBlocking { dataStoreManager.getToken() }
+        val newRequest = if (!token.isNullOrBlank()) {
             originalRequest.newBuilder()
                 .header("Authorization", "Bearer $token")
                 .build()
         } else {
             originalRequest
         }
-        
-        return chain.proceed(newRequest)
+
+        val response = chain.proceed(newRequest)
+
+        // 3. Handle 401 (Token Expired)
+        if (response.code == 401 || response.code == 403) {
+            // Only one thread enters this block
+            if (isLoggingOut.compareAndSet(false, true)) {
+                runBlocking {
+                    dataStoreManager.clearToken()
+                }
+
+                // Redirect to Login
+                val intent = Intent(context, AuthActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                }
+                context.startActivity(intent)
+
+                // Note: We don't reset isLoggingOut to false immediately
+                // because the app is restarting anyway.
+            }
+        }
+
+        return response
     }
 }

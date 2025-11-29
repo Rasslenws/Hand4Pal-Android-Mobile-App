@@ -34,8 +34,7 @@ class AuthActivity : AppCompatActivity() {
         setContentView(R.layout.activity_auth)
 
         // Initialize AuthInterceptor with context
-        AuthInterceptor.init(this)
-
+        RetrofitClient.init(applicationContext)
         // Enable back button in action bar
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
