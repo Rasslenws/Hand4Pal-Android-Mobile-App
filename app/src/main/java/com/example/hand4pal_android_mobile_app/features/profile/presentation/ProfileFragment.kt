@@ -1,34 +1,43 @@
 package com.example.hand4pal_android_mobile_app.features.profile.presentation
 
 import android.app.AlertDialog
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
-import androidx.datastore.preferences.core.edit
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.ProgressBar
+import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.hand4pal_android_mobile_app.R
-import com.example.hand4pal_android_mobile_app.core.network.DataStoreKeys
+import com.example.hand4pal_android_mobile_app.core.network.DataStoreManager
 import com.example.hand4pal_android_mobile_app.core.network.RetrofitClient
-import com.example.hand4pal_android_mobile_app.core.network.dataStore
 import com.example.hand4pal_android_mobile_app.features.auth.presentation.AuthActivity
 import com.example.hand4pal_android_mobile_app.features.profile.data.ProfileRepositoryImpl
-import com.example.hand4pal_android_mobile_app.features.profile.domain.*
-import com.google.android.material.textfield.TextInputEditText
+import com.example.hand4pal_android_mobile_app.features.profile.domain.ChangePasswordRequest
+import com.example.hand4pal_android_mobile_app.features.profile.domain.ProfileResponse
+import com.example.hand4pal_android_mobile_app.features.profile.domain.ProfileState
+import com.example.hand4pal_android_mobile_app.features.profile.domain.UpdateProfileRequest
 import kotlinx.coroutines.launch
 
 class ProfileFragment : Fragment() {
 
     private val viewModel: ProfileViewModel by viewModels {
+        // 1. Ensure Retrofit is initialized safely
+        RetrofitClient.init(requireContext().applicationContext)
         ProfileViewModelFactory(
             ProfileRepositoryImpl(RetrofitClient.profileApi)
         )
     }
+
+    // 2. Use DataStoreManager
+    private val dataStoreManager by lazy { DataStoreManager(requireContext()) }
 
     private lateinit var progressBar: ProgressBar
     private lateinit var profileContainer: LinearLayout
@@ -36,25 +45,19 @@ class ProfileFragment : Fragment() {
     private lateinit var tvUserEmail: TextView
     private lateinit var tvUserRole: TextView
     private lateinit var ivAvatar: ImageView
-    private lateinit var btnEditProfile: Button
-    private lateinit var btnChangePassword: Button
-    private lateinit var btnLogout: Button
+
+    // 3. Use generic View (not Button) to match your XML LinearLayouts
+    private lateinit var btnEditProfile: View
+    private lateinit var btnChangePassword: View
+    private lateinit var btnLogout: View
 
     private var currentProfile: ProfileResponse? = null
 
-    // Avatar drawables
     private val avatarDrawables = listOf(
-        R.drawable.avatar1,
-        R.drawable.avatar2,
-        R.drawable.avatar3,
-        R.drawable.avatar4
+        R.drawable.avatar1, R.drawable.avatar2, R.drawable.avatar3, R.drawable.avatar4
     )
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_profile, container, false)
     }
 
@@ -67,32 +70,23 @@ class ProfileFragment : Fragment() {
         tvUserEmail = view.findViewById(R.id.tvUserEmail)
         tvUserRole = view.findViewById(R.id.tvUserRole)
         ivAvatar = view.findViewById(R.id.ivAvatar)
+
+        // 4. Find views safely
         btnEditProfile = view.findViewById(R.id.btnEditProfile)
         btnChangePassword = view.findViewById(R.id.btnChangePassword)
         btnLogout = view.findViewById(R.id.btnLogout)
 
         setupClickListeners()
         observeProfileState()
-        
+
         viewModel.loadProfile()
     }
 
     private fun setupClickListeners() {
-        btnEditProfile.setOnClickListener {
-            showEditProfileDialog()
-        }
-
-        btnChangePassword.setOnClickListener {
-            showChangePasswordDialog()
-        }
-
-        btnLogout.setOnClickListener {
-            logout()
-        }
-        
-        ivAvatar.setOnClickListener {
-            showAvatarSelectionDialog()
-        }
+        btnEditProfile.setOnClickListener { showEditProfileDialog() }
+        btnChangePassword.setOnClickListener { showChangePasswordDialog() }
+        btnLogout.setOnClickListener { logout() }
+        ivAvatar.setOnClickListener { showAvatarSelectionDialog() }
     }
 
     private fun observeProfileState() {
@@ -124,8 +118,10 @@ class ProfileFragment : Fragment() {
             viewModel.updateState.collect { state ->
                 when (state) {
                     is ProfileState.Success -> {
-                        Toast.makeText(requireContext(), "Profile updated successfully", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "Update successful!", Toast.LENGTH_SHORT).show()
                         viewModel.resetUpdateState()
+                        // 5. Reload profile to update UI
+                        viewModel.loadProfile()
                     }
                     is ProfileState.Error -> {
                         Toast.makeText(requireContext(), state.message, Toast.LENGTH_LONG).show()
@@ -141,8 +137,7 @@ class ProfileFragment : Fragment() {
         tvUserName.text = "${profile.firstName} ${profile.lastName}"
         tvUserEmail.text = profile.email
         tvUserRole.text = profile.role
-        
-        // Load avatar based on profilePictureUrl
+
         profile.profilePictureUrl?.let { avatarUrl ->
             val avatarIndex = avatarUrl.replace("avatar", "").toIntOrNull()?.minus(1)
             if (avatarIndex != null && avatarIndex in avatarDrawables.indices) {
@@ -155,10 +150,11 @@ class ProfileFragment : Fragment() {
         val profile = currentProfile ?: return
 
         val dialogView = layoutInflater.inflate(R.layout.dialog_edit_profile, null)
-        val etFirstName = dialogView.findViewById<TextInputEditText>(R.id.etFirstName)
-        val etLastName = dialogView.findViewById<TextInputEditText>(R.id.etLastName)
-        val etEmail = dialogView.findViewById<TextInputEditText>(R.id.etEmail)
-        val etPhone = dialogView.findViewById<TextInputEditText>(R.id.etPhone)
+
+        val etFirstName = dialogView.findViewById<EditText>(R.id.etFirstName)
+        val etLastName = dialogView.findViewById<EditText>(R.id.etLastName)
+        val etEmail = dialogView.findViewById<EditText>(R.id.etEmail)
+        val etPhone = dialogView.findViewById<EditText>(R.id.etPhone)
 
         etFirstName.setText(profile.firstName)
         etLastName.setText(profile.lastName)
@@ -169,11 +165,20 @@ class ProfileFragment : Fragment() {
             .setTitle("Edit Profile")
             .setView(dialogView)
             .setPositiveButton("Save") { _, _ ->
+                val phoneInput = etPhone.text.toString().trim()
+
+                // --- FIX STARTS HERE ---
+                if (phoneInput.isEmpty()) {
+                    Toast.makeText(requireContext(), "Phone number is required", Toast.LENGTH_SHORT).show()
+                    return@setPositiveButton // Stop execution here
+                }
+                // --- FIX ENDS HERE ---
+
                 val request = UpdateProfileRequest(
                     firstName = etFirstName.text.toString(),
                     lastName = etLastName.text.toString(),
                     email = etEmail.text.toString(),
-                    phone = etPhone.text.toString(),
+                    phone = phoneInput, // Use the checked variable
                     profilePictureUrl = profile.profilePictureUrl
                 )
                 viewModel.updateProfile(request)
@@ -182,11 +187,17 @@ class ProfileFragment : Fragment() {
             .show()
     }
 
+
     private fun showChangePasswordDialog() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_change_password, null)
-        val etCurrentPassword = dialogView.findViewById<TextInputEditText>(R.id.etCurrentPassword)
-        val etNewPassword = dialogView.findViewById<TextInputEditText>(R.id.etNewPassword)
-        val etConfirmPassword = dialogView.findViewById<TextInputEditText>(R.id.etConfirmPassword)
+
+        // 7. Fallback for password fields
+        val etCurrentPassword = dialogView.findViewById<EditText>(R.id.etCurrentPassword)
+            ?: dialogView.findViewById(R.id.etCurrentPassword)
+        val etNewPassword = dialogView.findViewById<EditText>(R.id.etNewPassword)
+            ?: dialogView.findViewById(R.id.etNewPassword)
+        val etConfirmPassword = dialogView.findViewById<EditText>(R.id.etConfirmPassword)
+            ?: dialogView.findViewById(R.id.etConfirmPassword)
 
         AlertDialog.Builder(requireContext())
             .setTitle("Change Password")
@@ -214,7 +225,7 @@ class ProfileFragment : Fragment() {
 
     private fun showAvatarSelectionDialog() {
         val avatarNames = arrayOf("Avatar 1", "Avatar 2", "Avatar 3", "Avatar 4")
-        
+
         AlertDialog.Builder(requireContext())
             .setTitle("Select Avatar")
             .setItems(avatarNames) { _, which ->
@@ -234,10 +245,9 @@ class ProfileFragment : Fragment() {
 
     private fun logout() {
         viewLifecycleOwner.lifecycleScope.launch {
-            requireContext().dataStore.edit { preferences ->
-                preferences.remove(DataStoreKeys.TOKEN_KEY)
-            }
-            
+            // 8. Clean logout using DataStoreManager
+            dataStoreManager.clearToken()
+
             val intent = Intent(requireContext(), AuthActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
