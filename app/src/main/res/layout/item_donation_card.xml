@@ -1,125 +1,152 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="280dp"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="4dp"
-    android:layout_marginEnd="16dp"
-    android:layout_marginBottom="8dp"
-    android:layout_marginStart="4dp">
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="0dp"
+    app:strokeColor="#E0E0E0"
+    app:strokeWidth="1dp"
+    android:backgroundTint="@android:color/white">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:padding="12dp">
 
         <!-- Image -->
-        <ImageView
-            android:id="@+id/ivCampaign"
-            android:layout_width="match_parent"
-            android:layout_height="140dp"
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/imgCampaign"
+            android:layout_width="100dp"
+            android:layout_height="70dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/banner_placeholder"
-            android:background="#E0E0E0"/>
+            android:src="@drawable/bg_gradient_placeholder"
+            app:shapeAppearanceOverlay="@style/RoundedImage"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <!-- Nom Auteur / Association -->
+        <TextView
+            android:id="@+id/txtAuthor"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:text="Association Name"
+            android:textSize="12sp"
+            android:textColor="#666666"
+            android:layout_marginStart="12dp"
+            app:layout_constraintStart_toEndOf="@id/imgCampaign"
+            app:layout_constraintTop_toTopOf="@id/imgCampaign" />
 
-            <!-- Tag / Org Name -->
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="8dp">
-                <TextView
-                    android:id="@+id/tvOrgName"
-                    android:text="Palestine Foundation"
-                    android:textSize="12sp"
-                    android:textColor="#757575"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-                <ImageView
-                    android:layout_width="12dp"
-                    android:layout_height="12dp"
-                    android:src="@android:drawable/checkbox_on_background"
-                    app:tint="#2196F3"
-                    android:layout_marginStart="4dp"/>
-            </LinearLayout>
+        <!-- Date (ID: txtDate) -->
+        <TextView
+            android:id="@+id/txtDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="May 20, 2024"
+            android:textSize="12sp"
+            android:textColor="#888888"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/txtAuthor" />
 
-            <!-- Title -->
-            <TextView
-                android:id="@+id/tvTitle"
-                android:text="Provide clean water and food for families in Gaza"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="#000000"
-                android:maxLines="2"
-                android:ellipsize="end"
-                android:layout_marginBottom="12dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+        <!-- Titre (ID: txtTitle) -->
+        <TextView
+            android:id="@+id/txtTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Help flood victim"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:layout_marginTop="4dp"
+            app:layout_constraintStart_toStartOf="@id/txtAuthor"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/txtAuthor" />
 
-            <!-- Progress Bar -->
-            <ProgressBar
-                android:id="@+id/progressBar"
-                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="6dp"
-                android:progress="60"
-                android:progressDrawable="@drawable/bg_progress_green"
-                android:layout_marginBottom="8dp"/>
+        <!-- Progress Bar (ID: progressBar) -->
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="0dp"
+            android:layout_height="4dp"
+            android:layout_marginTop="8dp"
+            android:progress="50"
+            android:progressTint="#107C41"
+            android:backgroundTint="#E0E0E0"
+            app:layout_constraintStart_toStartOf="@id/txtAuthor"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/txtTitle" />
 
-            <!-- Stats -->
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp">
-                <TextView
-                    android:text="Raised"
-                    android:textSize="12sp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-                <TextView
-                    android:id="@+id/tvRaised"
-                    android:text="TND 2,400"
-                    android:textStyle="bold"
-                    android:textColor="#000000"
-                    android:layout_marginTop="16dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+        <!-- Label "Raised" -->
+        <TextView
+            android:id="@+id/lblRaised"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Raised"
+            android:textSize="10sp"
+            android:textColor="#888888"
+            android:layout_marginTop="4dp"
+            app:layout_constraintStart_toStartOf="@id/progressBar"
+            app:layout_constraintTop_toBottomOf="@id/progressBar" />
 
-                <TextView
-                    android:text="Days left"
-                    android:textSize="12sp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-                <TextView
-                    android:id="@+id/tvDaysLeft"
-                    android:text="22"
-                    android:textStyle="bold"
-                    android:textColor="#000000"
-                    android:layout_marginTop="16dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-            </RelativeLayout>
+        <!-- Montant Collecté (ID: txtRaised) -->
+        <TextView
+            android:id="@+id/txtRaised"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="$2,400"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            app:layout_constraintStart_toStartOf="@id/lblRaised"
+            app:layout_constraintTop_toBottomOf="@id/lblRaised" />
 
-            <!-- Donate Button -->
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnDonate"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:text="Donate"
-                android:textColor="#FFF"
-                android:background="@drawable/bg_button_green"
-                android:textAllCaps="false"/>
+        <!-- Label "Target" -->
+        <TextView
+            android:id="@+id/lblTarget"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Target"
+            android:textSize="10sp"
+            android:textColor="#888888"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/lblRaised" />
 
-        </LinearLayout>
-    </LinearLayout>
-</androidx.cardview.widget.CardView>
+        <!-- Note : Vous n'avez pas mis txtTarget dans l'adapter, donc je ne le mets pas ici ou je le laisse statique -->
+
+        <!-- Votre Don (ID: txtUserDonation) -->
+        <TextView
+            android:id="@+id/txtUserDonation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="You have donated $20"
+            android:textSize="12sp"
+            android:textColor="#555555"
+            android:layout_marginTop="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/txtRaised"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <!-- Bouton Donate Again -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnDonateAgain"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Donate again"
+            android:textSize="11sp"
+            android:textColor="@android:color/white"
+            app:backgroundTint="#107C41"
+            app:cornerRadius="8dp"
+            android:minHeight="0dp"
+            android:paddingVertical="6dp"
+            android:paddingHorizontal="12dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="@id/txtUserDonation" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

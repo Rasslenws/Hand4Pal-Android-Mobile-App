@@ -2,6 +2,7 @@ package com.example.hand4pal_android_mobile_app.core.network
 
 import android.content.Context
 import com.example.hand4pal_android_mobile_app.features.auth.data.AuthApi
+import com.example.hand4pal_android_mobile_app.features.donation.data.DonationApi
 import com.example.hand4pal_android_mobile_app.features.profile.data.ProfileApi
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -16,6 +17,9 @@ object RetrofitClient {
     lateinit var authApi: AuthApi
         private set
     lateinit var profileApi: ProfileApi
+        private set
+
+    lateinit var donationApi: DonationApi
         private set
 
     private var isInitialized = false
@@ -50,6 +54,7 @@ object RetrofitClient {
         // Create API instances
         authApi = retrofit.create(AuthApi::class.java)
         profileApi = retrofit.create(ProfileApi::class.java)
+        donationApi = retrofit.create(DonationApi::class.java)
 
         isInitialized = true
     }

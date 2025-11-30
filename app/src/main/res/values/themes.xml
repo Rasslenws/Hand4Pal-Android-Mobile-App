@@ -6,4 +6,11 @@
     </style>
 
     <style name="Theme.Hand4PalAndroidMobileApp" parent="Base.Theme.Hand4PalAndroidMobileApp" />
+
+    <!-- Style pour les coins arrondis de l'image -->
+    <style name="RoundedImage">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
+    </style>
+
 </resources>
