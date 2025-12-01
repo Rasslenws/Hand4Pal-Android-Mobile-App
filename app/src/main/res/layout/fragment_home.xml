@@ -145,10 +145,13 @@
 
                 <!-- Category 2: Campaign -->
                 <LinearLayout
+                    android:id="@+id/llCampaignCategory"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:orientation="vertical">
                     <FrameLayout
                         android:layout_width="60dp"
@@ -184,8 +187,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
                 <TextView
+                    android:id="@+id/tvSeeAllUrgent"
                     android:text="See all"
                     android:textColor="#1B5E20"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:layout_alignParentEnd="true"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>

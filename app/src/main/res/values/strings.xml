@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Hand4Pal-Android-Mobile-App</string>
+
+    <!-- Campaign Details -->
+    <string name="campaign_number">Campaign #%1$d</string>
+    <string name="count_plus">%1$d+</string>
+    <string name="wishes">Wishes</string>
+    <string name="donations">Donations</string>
 </resources>
