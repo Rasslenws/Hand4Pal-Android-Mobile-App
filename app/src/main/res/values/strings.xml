@@ -6,4 +6,10 @@
     <string name="count_plus">%1$d+</string>
     <string name="wishes">Wishes</string>
     <string name="donations">Donations</string>
+
+    <!-- Campaign Form -->
+    <string name="create_campaign_title">Create Campaign</string>
+    <string name="update_campaign_title">Update Campaign</string>
+    <string name="create_campaign_button">Create Campaign</string>
+    <string name="update_campaign_button">Update Campaign</string>
 </resources>

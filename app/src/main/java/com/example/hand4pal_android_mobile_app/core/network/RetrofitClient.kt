@@ -40,17 +40,22 @@ object RetrofitClient {
         }
 
         val okHttpClient = OkHttpClient.Builder()
-            .addInterceptor(loggingInterceptor)
-            .addInterceptor(authInterceptor)
+            .addInterceptor(authInterceptor)      // Add token FIRST
+            .addInterceptor(loggingInterceptor)   // Log AFTER (will show Authorization header)
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)
             .build()
 
+        // Configure Gson to serialize null values (backend may expect them)
+        val gson = com.google.gson.GsonBuilder()
+            .serializeNulls()
+            .create()
+
         val retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
 
         // Create API instances

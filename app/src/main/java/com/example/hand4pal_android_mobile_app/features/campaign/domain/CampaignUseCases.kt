@@ -25,3 +25,60 @@ class GetCampaignDetailsUseCase(
         return repository.getCampaignById(campaignId)
     }
 }
+
+/**
+ * Use case for fetching association's campaigns
+ */
+class GetMyCampaignsUseCase(
+    private val repository: CampaignRepository
+) {
+    suspend operator fun invoke(): Result<List<CampaignDTO>> {
+        return repository.getMyCampaigns()
+    }
+}
+
+/**
+ * Use case for filtering campaigns by status
+ */
+class FilterMyCampaignsUseCase {
+    operator fun invoke(campaigns: List<CampaignDTO>, status: CampaignStatus): List<CampaignDTO> {
+        if (status == CampaignStatus.ALL) {
+            return campaigns
+        }
+        return campaigns.filter { it.status.equals(status.value, ignoreCase = true) }
+    }
+}
+
+/**
+ * Use case for creating a campaign
+ */
+class CreateCampaignUseCase(
+    private val repository: CampaignRepository
+) {
+    suspend operator fun invoke(request: CreateCampaignRequest): Result<CampaignDTO> {
+        return repository.createCampaign(request)
+    }
+}
+
+/**
+ * Use case for updating a campaign
+ */
+class UpdateCampaignUseCase(
+    private val repository: CampaignRepository
+) {
+    suspend operator fun invoke(campaignId: Long, request: UpdateCampaignRequest): Result<CampaignDTO> {
+        return repository.updateCampaign(campaignId, request)
+    }
+}
+
+/**
+ * Use case for fetching campaign with association details
+ */
+class GetCampaignWithAssociationUseCase(
+    private val repository: CampaignRepository
+) {
+    suspend operator fun invoke(campaignId: Long): Result<CampaignDTO> {
+        return repository.getCampaignWithAssociation(campaignId)
+    }
+}
+
