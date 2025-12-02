@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/campaign_nav_graph"
+    app:startDestination="@id/campaignsFragment">
+
+    <fragment
+        android:id="@+id/campaignsFragment"
+        android:name="com.example.hand4pal_android_mobile_app.features.campaign.presentation.CampaignListFragment"
+        android:label="Campaigns"
+        tools:layout="@layout/fragment_campaigns">
+        <action
+            android:id="@+id/action_campaignsFragment_to_campaignDetailFragment"
+            app:destination="@id/campaignDetailFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right"
+            app:popEnterAnim="@android:anim/slide_in_left"
+            app:popExitAnim="@android:anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/campaignDetailFragment"
+        android:name="com.example.hand4pal_android_mobile_app.features.campaign.presentation.CampaignDetailFragment"
+        android:label="Campaign Details"
+        tools:layout="@layout/fragment_campaign_details">
+        <argument
+            android:name="campaignId"
+            app:argType="long" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.hand4pal_android_mobile_app.features.home.HomeFragment"
+        android:label="Home">
+
+        <action
+            android:id="@+id/action_homeFragment_to_campaignsFragment"
+            app:destination="@id/campaignsFragment" />
+
+        <action
+            android:id="@+id/action_homeFragment_to_campaignDetailFragment"
+            app:destination="@id/campaignDetailFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right"
+            app:popEnterAnim="@android:anim/slide_in_left"
+            app:popExitAnim="@android:anim/slide_out_right" />
+    </fragment>
+
+</navigation>

@@ -2,18 +2,21 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/nav_home"
-        android:icon="@android:drawable/ic_menu_view"
+        android:icon="@drawable/ic_home"
         android:title="Home" />
+
     <item
-        android:id="@+id/nav_campaigns"
-        android:icon="@android:drawable/ic_menu_info_details"
-        android:title="Campaigns" />
+        android:id="@+id/nav_donation"
+        android:icon="@drawable/ic_donation"
+        android:title="Donation" />
+
+    <item
+        android:id="@+id/nav_campaign"
+        android:icon="@drawable/ic_campaign"
+        android:title="Campaign" />
+
     <item
         android:id="@+id/nav_profile"
-        android:icon="@android:drawable/ic_menu_myplaces"
+        android:icon="@drawable/ic_profile"
         android:title="Profile" />
-    <item
-        android:id="@+id/nav_settings"
-        android:icon="@android:drawable/ic_menu_preferences"
-        android:title="Settings" />
 </menu>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Bottom Navigation IDs -->
+    <item name="nav_dashboard" type="id"/>
+</resources>
+

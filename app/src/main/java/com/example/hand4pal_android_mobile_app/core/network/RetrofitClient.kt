@@ -2,6 +2,9 @@ package com.example.hand4pal_android_mobile_app.core.network
 
 import android.content.Context
 import com.example.hand4pal_android_mobile_app.features.auth.data.AuthApi
+import com.example.hand4pal_android_mobile_app.features.campaign.data.CampaignApi
+import com.example.hand4pal_android_mobile_app.features.campaign.data.CommentApi
+import com.example.hand4pal_android_mobile_app.features.donation.data.DonationApi
 import com.example.hand4pal_android_mobile_app.features.profile.data.ProfileApi
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -10,12 +13,21 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
-    private const val BASE_URL = "http://10.0.2.2:8081/"
+    private const val BASE_URL = "http://10.0.2.2:8080/api/"
 
     // APIs are initialized lazily
     lateinit var authApi: AuthApi
         private set
     lateinit var profileApi: ProfileApi
+        private set
+    lateinit var donationApi: DonationApi
+        private set
+    lateinit var campaignApi: CampaignApi
+        private set
+    lateinit var commentApi: CommentApi
+        private set
+
+    lateinit var retrofit: Retrofit
         private set
 
     private var isInitialized = false
@@ -34,22 +46,30 @@ object RetrofitClient {
         }
 
         val okHttpClient = OkHttpClient.Builder()
-            .addInterceptor(loggingInterceptor)
-            .addInterceptor(authInterceptor)
+            .addInterceptor(authInterceptor)      // Add token FIRST
+            .addInterceptor(loggingInterceptor)   // Log AFTER (will show Authorization header)
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)
             .build()
 
-        val retrofit = Retrofit.Builder()
+        // Configure Gson to serialize null values (backend may expect them)
+        val gson = com.google.gson.GsonBuilder()
+            .serializeNulls()
+            .create()
+
+        retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
 
         // Create API instances
         authApi = retrofit.create(AuthApi::class.java)
         profileApi = retrofit.create(ProfileApi::class.java)
+        donationApi = retrofit.create(DonationApi::class.java)
+        campaignApi = retrofit.create(CampaignApi::class.java)
+        commentApi = retrofit.create(CommentApi::class.java)
 
         isInitialized = true
     }

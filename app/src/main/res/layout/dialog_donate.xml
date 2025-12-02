@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/dialogTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Make a donation"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@color/text_dark" />
+
+    <!-- Subtitle -->
+    <TextView
+        android:id="@+id/dialogSubtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Enter the amount and an optional wish."
+        android:textSize="14sp"
+        android:textColor="@color/text_gray" />
+
+    <!-- Amount -->
+    <com.google.android.material.textfield.TextInputLayout
+    android:id="@+id/amountInputLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="16dp"
+    android:hint="Amount"
+    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+    app:boxCornerRadiusTopStart="12dp"
+    app:boxCornerRadiusTopEnd="12dp"
+    app:boxCornerRadiusBottomStart="12dp"
+    app:boxCornerRadiusBottomEnd="12dp"
+    app:prefixText="DT">
+
+    <com.google.android.material.textfield.TextInputEditText
+    android:id="@+id/amountEditText"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:inputType="numberDecimal"
+    android:maxLines="1" />
+</com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Wish -->
+    <com.google.android.material.textfield.TextInputLayout
+    android:id="@+id/wishInputLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="12dp"
+    android:hint="Wish (optional)"
+    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+    app:boxCornerRadiusTopStart="12dp"
+    app:boxCornerRadiusTopEnd="12dp"
+    app:boxCornerRadiusBottomStart="12dp"
+    app:boxCornerRadiusBottomEnd="12dp"
+    app:counterEnabled="true"
+    app:counterMaxLength="120">
+
+    <com.google.android.material.textfield.TextInputEditText
+    android:id="@+id/wishEditText"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:inputType="textCapSentences|textMultiLine"
+    android:minLines="2"
+    android:maxLines="4" />
+</com.google.android.material.textfield.TextInputLayout>
+
+    </LinearLayout>
