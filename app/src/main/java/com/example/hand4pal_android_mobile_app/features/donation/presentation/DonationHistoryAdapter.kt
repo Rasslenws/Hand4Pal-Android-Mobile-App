@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hand4pal_android_mobile_app.R
 import com.example.hand4pal_android_mobile_app.features.donation.domain.DonationHistory
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -40,13 +41,18 @@ class DonationHistoryAdapter : RecyclerView.Adapter<DonationHistoryAdapter.ViewH
         private val txtDate: TextView = view.findViewById(R.id.txtDate)
         private val txtRaised: TextView = view.findViewById(R.id.txtRaised)
         private val progressBar: ProgressBar = view.findViewById(R.id.progressBar)
+        private val currencyFormat =
+            NumberFormat.getNumberInstance(Locale("fr", "TN")) // 1 234,567 style
 
         fun bind(item: DonationHistory) {
             val campaign = item.campaign
 
             txtTitle.text = campaign?.title ?: "Unknown Campaign"
             txtAuthor.text = "Association #${campaign?.associationId}"
-            txtUserDonation.text = "You have donated ${item.currency} ${item.amount}"
+
+            // User donation in DT
+            val formattedDonation = currencyFormat.format(item.amount)
+            txtUserDonation.text = "You have donated  $formattedDonation DT"
 
             // Format Date
             try {
@@ -58,11 +64,16 @@ class DonationHistoryAdapter : RecyclerView.Adapter<DonationHistoryAdapter.ViewH
                 txtDate.text = item.donationDate.take(10)
             }
 
-            // Progress
+            // Progress + raised amount in DT
             if (campaign != null && campaign.targetAmount > 0) {
                 val progress = (campaign.collectedAmount / campaign.targetAmount) * 100
                 progressBar.progress = progress.toInt()
-                txtRaised.text = "${item.currency} ${campaign.collectedAmount}"
+
+                val formattedCollected = currencyFormat.format(campaign.collectedAmount)
+                txtRaised.text = " $formattedCollected DT raised"
+            } else {
+                progressBar.progress = 0
+                txtRaised.text = "DT 0"
             }
         }
     }

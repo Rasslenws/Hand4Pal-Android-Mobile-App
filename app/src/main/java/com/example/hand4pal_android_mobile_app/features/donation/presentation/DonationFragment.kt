@@ -11,18 +11,19 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hand4pal_android_mobile_app.R
+import com.example.hand4pal_android_mobile_app.features.donation.data.DonationRepositoryImpl
 
 class DonationFragment : Fragment() {
 
-    // On utilise le ViewModel créé juste avant
-    private val viewModel: DonationViewModel by viewModels()
+    private val viewModel: DonationViewModel by viewModels { 
+        DonationViewModelFactory(DonationRepositoryImpl())
+    }
     private lateinit var adapter: DonationHistoryAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Assurez-vous d'avoir le layout fragment_donation_history.xml (celui avec le titre et la liste)
         return inflater.inflate(R.layout.fragment_donation_history, container, false)
     }
 
@@ -30,13 +31,12 @@ class DonationFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val recycler = view.findViewById<RecyclerView>(R.id.recyclerHistory)
-        val progressBar = view.findViewById<ProgressBar>(R.id.progressBar) // ID du loading dans votre XML
+        val progressBar = view.findViewById<ProgressBar>(R.id.progressBar)
 
         adapter = DonationHistoryAdapter()
         recycler.layoutManager = LinearLayoutManager(context)
         recycler.adapter = adapter
 
-        // Observer les données
         viewModel.donations.observe(viewLifecycleOwner) { list ->
             adapter.submitList(list)
         }
@@ -51,7 +51,6 @@ class DonationFragment : Fragment() {
             }
         }
 
-        // Charger les données
         viewModel.loadDonations()
     }
 }

@@ -344,6 +344,7 @@
             android:textStyle="bold"
             android:textColor="@color/white"
             android:background="@drawable/bg_button_green"
+            app:backgroundTint="@null"
             app:layout_constraintTop_toBottomOf="@id/donationsCard"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />

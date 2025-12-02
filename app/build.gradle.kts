@@ -45,12 +45,11 @@ dependencies {
     // Core Android Dependencies
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
-    implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     
     // Fragment and Lifecycle
-    implementation("androidx.fragment:fragment-ktx:1.6.2")
+    implementation("androidx.fragment:fragment-ktx:1.8.2")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.4")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.4")
     
@@ -62,7 +61,7 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences:1.0.0")
     
     // Material Design
-    implementation("com.google.android.material:material:1.9.0")
+    implementation("com.google.android.material:material:1.13.0")
     
     // Networking - Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")

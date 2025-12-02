@@ -29,7 +29,7 @@ class AuthInterceptor(
 
         // 2. Add Token Header
         val token = runBlocking { dataStoreManager.getToken() }
-        android.util.Log.d("AuthInterceptor", "Token retrieved: ${if (token.isNullOrBlank()) "EMPTY" else "EXISTS (${token.take(20)}...)"}")
+        android.util.Log.d("AuthInterceptor", "Token retrieved: $token")
 
         val newRequest = if (!token.isNullOrBlank()) {
             originalRequest.newBuilder()

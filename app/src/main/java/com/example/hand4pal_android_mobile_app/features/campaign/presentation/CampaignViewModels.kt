@@ -1,22 +1,15 @@
 package com.example.hand4pal_android_mobile_app.features.campaign.presentation
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.hand4pal_android_mobile_app.features.campaign.domain.*
+import com.example.hand4pal_android_mobile_app.features.donation.domain.DonationRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-/**
- * ViewModel for Campaign List screen
- * Follows the exact same pattern as AuthViewModel and ProfileViewModel
- * 
- * Responsibilities:
- * - Expose StateFlow for UI state
- * - Call use cases
- * - Update state based on results
- */
 class CampaignListViewModel(
     private val getCampaignsUseCase: GetCampaignsUseCase
 ) : ViewModel() {
@@ -24,10 +17,7 @@ class CampaignListViewModel(
     private val _uiState = MutableStateFlow<CampaignListUiState>(CampaignListUiState.Idle)
     val uiState: StateFlow<CampaignListUiState> = _uiState
     
-    /**
-     * Load active campaigns
-     * Updates UI state based on result
-     */
+
     fun loadCampaigns() {
         viewModelScope.launch {
             _uiState.value = CampaignListUiState.Loading
@@ -48,20 +38,18 @@ class CampaignListViewModel(
     }
 }
 
-/**
- * ViewModel for Campaign Detail screen
- */
 class CampaignDetailViewModel(
-    private val getCampaignDetailsUseCase: GetCampaignDetailsUseCase
+    private val getCampaignDetailsUseCase: GetCampaignDetailsUseCase,
+    private val donationRepository: DonationRepository,
+    private val commentRepository: CommentRepository
 ) : ViewModel() {
     
     private val _uiState = MutableStateFlow<CampaignDetailUiState>(CampaignDetailUiState.Idle)
     val uiState: StateFlow<CampaignDetailUiState> = _uiState
+
+    private val _donationState = MutableStateFlow<DonationUiState>(DonationUiState.Idle)
+    val donationState: StateFlow<DonationUiState> = _donationState
     
-    /**
-     * Load campaign details by ID
-     * Updates UI state based on result
-     */
     fun loadCampaignDetails(campaignId: Long) {
         viewModelScope.launch {
             _uiState.value = CampaignDetailUiState.Loading
@@ -76,16 +64,42 @@ class CampaignDetailViewModel(
                 }
         }
     }
+
+    fun makeDonationAndComment(donationRequest: MakeDonationRequest) {
+        viewModelScope.launch {
+            _donationState.value = DonationUiState.Loading
+            donationRepository.makeDonation(donationRequest)
+                .onSuccess { donation ->
+                    _donationState.value = DonationUiState.Success(donation)
+                    // If the donation wish is not blank, create a comment
+                    if (!donationRequest.wish.isNullOrBlank()) {
+                        val commentRequest = CommentRequestDTO(
+                            campaignId = donationRequest.campaignId,
+                            content = donationRequest.wish
+                        )
+                        commentRepository.createComment(commentRequest)
+                            .onSuccess {
+                                Log.d("ViewModel", "Comment created successfully")
+                            }
+                            .onFailure {
+                                Log.e("ViewModel", "Failed to create comment: ${it.message}")
+                            }
+                    }
+                }
+                .onFailure { error ->
+                    _donationState.value = DonationUiState.Error(
+                        error.message ?: "Failed to make donation"
+                    )
+                }
+        }
+    }
     
     fun resetState() {
         _uiState.value = CampaignDetailUiState.Idle
+        _donationState.value = DonationUiState.Idle
     }
 }
 
-/**
- * ViewModelFactory for CampaignListViewModel
- * Follows the same pattern as ProfileViewModelFactory
- */
 class CampaignListViewModelFactory(
     private val getCampaignsUseCase: GetCampaignsUseCase
 ) : ViewModelProvider.Factory {
@@ -98,17 +112,23 @@ class CampaignListViewModelFactory(
     }
 }
 
-/**
- * ViewModelFactory for CampaignDetailViewModel
- */
 class CampaignDetailViewModelFactory(
-    private val getCampaignDetailsUseCase: GetCampaignDetailsUseCase
+    private val getCampaignDetailsUseCase: GetCampaignDetailsUseCase,
+    private val donationRepository: DonationRepository,
+    private val commentRepository: CommentRepository
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(CampaignDetailViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return CampaignDetailViewModel(getCampaignDetailsUseCase) as T
+            return CampaignDetailViewModel(getCampaignDetailsUseCase, donationRepository, commentRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
+}
+
+sealed class DonationUiState {
+    object Idle : DonationUiState()
+    object Loading : DonationUiState()
+    data class Success(val donation: DonationDTO) : DonationUiState()
+    data class Error(val message: String) : DonationUiState()
 }

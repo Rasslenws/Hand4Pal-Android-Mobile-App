@@ -2,6 +2,8 @@ package com.example.hand4pal_android_mobile_app.features.campaign.data
 
 import com.example.hand4pal_android_mobile_app.features.campaign.domain.CampaignDTO
 import com.example.hand4pal_android_mobile_app.features.campaign.domain.CreateCampaignRequest
+import com.example.hand4pal_android_mobile_app.features.campaign.domain.DonationDTO
+import com.example.hand4pal_android_mobile_app.features.campaign.domain.MakeDonationRequest
 import com.example.hand4pal_android_mobile_app.features.campaign.domain.UpdateCampaignRequest
 import retrofit2.Response
 import retrofit2.http.Body
@@ -66,4 +68,13 @@ interface CampaignApi {
         @Path("campaignId") campaignId: Long,
         @Body request: UpdateCampaignRequest
     ): Response<CampaignDTO>
+
+    /**
+     * POST /donations
+     * Makes a donation to a campaign
+     */
+    @POST("donations")
+    suspend fun makeDonation(
+        @Body request: MakeDonationRequest
+    ): Response<DonationDTO>
 }

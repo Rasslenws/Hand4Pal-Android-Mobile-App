@@ -10,6 +10,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,6 +23,8 @@ import com.example.hand4pal_android_mobile_app.features.campaign.domain.GetCampa
 import com.example.hand4pal_android_mobile_app.features.campaign.presentation.CampaignListAdapter
 import com.example.hand4pal_android_mobile_app.features.campaign.presentation.CampaignListViewModel
 import com.example.hand4pal_android_mobile_app.features.campaign.presentation.CampaignListViewModelFactory
+import com.example.hand4pal_android_mobile_app.features.donation.data.DonationRepositoryImpl
+import com.example.hand4pal_android_mobile_app.features.donation.domain.DonationRepository
 import com.example.hand4pal_android_mobile_app.features.donation.presentation.DonationHistoryAdapter
 import com.example.hand4pal_android_mobile_app.features.donation.presentation.DonationViewModel
 import kotlinx.coroutines.launch
@@ -127,29 +131,21 @@ class HomeFragment : Fragment() {
     }
 }
 
-/**
- * CampaignsFragment - Main container for Campaign feature
- * This fragment hosts the CampaignListFragment using NavHostFragment
- * 
- * The actual campaign list and detail logic is in:
- * - com.example.hand4pal_android_mobile_app.features.campaign.presentation.CampaignListFragment
- * - com.example.hand4pal_android_mobile_app.features.campaign.presentation.CampaignDetailFragment
- */
 class CampaignsFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // The layout now contains a NavHostFragment for campaign navigation
         return inflater.inflate(R.layout.fragment_campaigns_host, container, false)
     }
 }
 
 class DonationFragment : Fragment() {
 
-    // Injection du ViewModel
-    private val viewModel: DonationViewModel by viewModels()
+    private val viewModel: DonationViewModel by viewModels { 
+        DonationViewModelFactory(DonationRepositoryImpl())
+    }
     private lateinit var adapter: DonationHistoryAdapter
 
     override fun onCreateView(
@@ -157,25 +153,20 @@ class DonationFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // ATTENTION : Utilisez le bon layout que vous avez créé (celui avec la liste)
-        // Pas "fragment_settings", mais celui de l'historique
         return inflater.inflate(R.layout.fragment_donation_history, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // 1. Initialisation des vues
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerHistory)
-        val progressBar = view.findViewById<ProgressBar>(R.id.progressBar) // Assurez-vous que cet ID existe dans votre XML
-        val tvEmpty = view.findViewById<TextView>(R.id.tvEmpty) // Optionnel
+        val progressBar = view.findViewById<ProgressBar>(R.id.progressBar) 
+        val tvEmpty = view.findViewById<TextView>(R.id.tvEmpty)
 
-        // 2. Setup Adapter
         adapter = DonationHistoryAdapter()
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = adapter
 
-        // 3. Observation des données
         viewModel.donations.observe(viewLifecycleOwner) { list ->
             progressBar?.visibility = View.GONE
             if (list.isEmpty()) {
@@ -195,8 +186,17 @@ class DonationFragment : Fragment() {
             }
         }
 
-        // 4. Chargement
         progressBar?.visibility = View.VISIBLE
         viewModel.loadDonations()
+    }
+}
+
+class DonationViewModelFactory(private val repository: DonationRepository) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(DonationViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return DonationViewModel(repository) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

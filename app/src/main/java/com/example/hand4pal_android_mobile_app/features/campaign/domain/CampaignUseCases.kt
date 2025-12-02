@@ -82,3 +82,13 @@ class GetCampaignWithAssociationUseCase(
     }
 }
 
+/**
+ * Use case for making a donation
+ */
+class MakeDonationUseCase(
+    private val repository: CampaignRepository
+) {
+    suspend operator fun invoke(request: MakeDonationRequest): Result<DonationDTO> {
+        return repository.makeDonation(request)
+    }
+}

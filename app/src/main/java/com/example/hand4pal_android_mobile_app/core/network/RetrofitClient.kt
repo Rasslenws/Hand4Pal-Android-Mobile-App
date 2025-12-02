@@ -3,6 +3,7 @@ package com.example.hand4pal_android_mobile_app.core.network
 import android.content.Context
 import com.example.hand4pal_android_mobile_app.features.auth.data.AuthApi
 import com.example.hand4pal_android_mobile_app.features.campaign.data.CampaignApi
+import com.example.hand4pal_android_mobile_app.features.campaign.data.CommentApi
 import com.example.hand4pal_android_mobile_app.features.donation.data.DonationApi
 import com.example.hand4pal_android_mobile_app.features.profile.data.ProfileApi
 import okhttp3.OkHttpClient
@@ -22,6 +23,11 @@ object RetrofitClient {
     lateinit var donationApi: DonationApi
         private set
     lateinit var campaignApi: CampaignApi
+        private set
+    lateinit var commentApi: CommentApi
+        private set
+
+    lateinit var retrofit: Retrofit
         private set
 
     private var isInitialized = false
@@ -52,7 +58,7 @@ object RetrofitClient {
             .serializeNulls()
             .create()
 
-        val retrofit = Retrofit.Builder()
+        retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create(gson))
@@ -63,6 +69,7 @@ object RetrofitClient {
         profileApi = retrofit.create(ProfileApi::class.java)
         donationApi = retrofit.create(DonationApi::class.java)
         campaignApi = retrofit.create(CampaignApi::class.java)
+        commentApi = retrofit.create(CommentApi::class.java)
 
         isInitialized = true
     }

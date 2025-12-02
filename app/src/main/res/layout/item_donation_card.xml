@@ -131,22 +131,7 @@
             app:layout_constraintTop_toBottomOf="@id/txtRaised"
             app:layout_constraintBottom_toBottomOf="parent"/>
 
-        <!-- Bouton Donate Again -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnDonateAgain"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Donate again"
-            android:textSize="11sp"
-            android:textColor="@android:color/white"
-            app:backgroundTint="#107C41"
-            app:cornerRadius="8dp"
-            android:minHeight="0dp"
-            android:paddingVertical="6dp"
-            android:paddingHorizontal="12dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="@id/txtUserDonation" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

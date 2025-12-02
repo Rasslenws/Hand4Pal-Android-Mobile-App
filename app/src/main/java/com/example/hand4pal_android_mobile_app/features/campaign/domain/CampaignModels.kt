@@ -103,3 +103,12 @@ enum class CampaignStatus(val value: String) {
     REJECTED("REJECTED"),
     COMPLETED("COMPLETED")
 }
+
+// Request model for making a donation
+data class MakeDonationRequest(
+    val campaignId: Long,
+    val amount: Double,
+    val isAnonymous: Boolean,
+    val wish: String?,
+    val currency: String
+)

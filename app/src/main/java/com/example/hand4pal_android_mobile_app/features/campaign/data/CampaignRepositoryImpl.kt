@@ -3,6 +3,8 @@ package com.example.hand4pal_android_mobile_app.features.campaign.data
 import com.example.hand4pal_android_mobile_app.features.campaign.domain.CampaignDTO
 import com.example.hand4pal_android_mobile_app.features.campaign.domain.CampaignRepository
 import com.example.hand4pal_android_mobile_app.features.campaign.domain.CreateCampaignRequest
+import com.example.hand4pal_android_mobile_app.features.campaign.domain.DonationDTO
+import com.example.hand4pal_android_mobile_app.features.campaign.domain.MakeDonationRequest
 import com.example.hand4pal_android_mobile_app.features.campaign.domain.UpdateCampaignRequest
 import com.google.gson.Gson
 
@@ -135,6 +137,26 @@ class CampaignRepositoryImpl(
                     errorMap["message"]?.toString() ?: "Failed to update campaign"
                 } catch (e: Exception) {
                     "Failed to update campaign"
+                }
+                Result.failure(Exception(errorMessage))
+            }
+        } catch (e: Exception) {
+            Result.failure(Exception("Network error: ${e.message}"))
+        }
+    }
+
+    override suspend fun makeDonation(request: MakeDonationRequest): Result<DonationDTO> {
+        return try {
+            val response = api.makeDonation(request)
+            if (response.isSuccessful && response.body() != null) {
+                Result.success(response.body()!!)
+            } else {
+                val errorBody = response.errorBody()?.string()
+                val errorMessage = try {
+                    val errorMap = Gson().fromJson(errorBody, Map::class.java)
+                    errorMap["message"]?.toString() ?: "Failed to make donation"
+                } catch (e: Exception) {
+                    "Failed to make donation"
                 }
                 Result.failure(Exception(errorMessage))
             }

@@ -32,6 +32,12 @@
             android:name=".MainActivity"
             android:exported="false"
             tools:ignore="DuplicateActivity" />
+
+        <!-- 4. CREATE CAMPAIGN ACTIVITY -->
+        <activity
+            android:name=".features.campaign.presentation.CreateCampaignActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>

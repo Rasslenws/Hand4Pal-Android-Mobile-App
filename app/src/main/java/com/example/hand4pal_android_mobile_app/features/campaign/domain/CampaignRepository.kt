@@ -48,4 +48,11 @@ interface CampaignRepository {
      * @return Result wrapping updated campaign or error
      */
     suspend fun updateCampaign(campaignId: Long, request: UpdateCampaignRequest): Result<CampaignDTO>
+
+    /**
+     * Make a donation to a campaign
+     * @param request the donation request
+     * @return Result wrapping donation or error
+     */
+    suspend fun makeDonation(request: MakeDonationRequest): Result<DonationDTO>
 }
