@@ -4,17 +4,17 @@
     <item android:id="@android:id/background">
         <shape>
             <solid android:color="#E0E0E0"/>
-            rners android:radius="5dp"/>
+            <corners android:radius="5dp"/>
         </shape>
     </item>
 
     <!-- Progress (Green part) -->
     <item android:id="@android:id/progress">
-        <lip>
-        <shape>
-            <solid android:color="#1B5E20"/>
-            rners android:radius="5dp"/>
-        </shape>
-    </lip>
-</item>
-    </layer-list>
+        <clip>
+            <shape>
+                <solid android:color="#1B5E20"/>
+                <corners android:radius="5dp"/>
+            </shape>
+        </clip>
+    </item>
+</layer-list>

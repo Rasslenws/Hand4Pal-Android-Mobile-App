@@ -1,7 +1,10 @@
 <resources>
     <color name="primary_green">#107C41</color>
+    <color name="primary_blue">#2196F3</color>
+    <color name="error_red">#F44336</color>
     <color name="text_dark">#1F1F1F</color>
     <color name="text_gray">#888888</color>
     <color name="bg_gray">#F9F9F9</color>
+    <color name="background_gray">#F9F9F9</color>
     <color name="white">#FFFFFF</color>
 </resources>

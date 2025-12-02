@@ -2,6 +2,7 @@ package com.example.hand4pal_android_mobile_app.core.network
 
 import android.content.Context
 import com.example.hand4pal_android_mobile_app.features.auth.data.AuthApi
+import com.example.hand4pal_android_mobile_app.features.campaign.data.CampaignApi
 import com.example.hand4pal_android_mobile_app.features.donation.data.DonationApi
 import com.example.hand4pal_android_mobile_app.features.profile.data.ProfileApi
 import okhttp3.OkHttpClient
@@ -18,8 +19,9 @@ object RetrofitClient {
         private set
     lateinit var profileApi: ProfileApi
         private set
-
     lateinit var donationApi: DonationApi
+        private set
+    lateinit var campaignApi: CampaignApi
         private set
 
     private var isInitialized = false
@@ -38,23 +40,29 @@ object RetrofitClient {
         }
 
         val okHttpClient = OkHttpClient.Builder()
-            .addInterceptor(loggingInterceptor)
-            .addInterceptor(authInterceptor)
+            .addInterceptor(authInterceptor)      // Add token FIRST
+            .addInterceptor(loggingInterceptor)   // Log AFTER (will show Authorization header)
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)
             .build()
 
+        // Configure Gson to serialize null values (backend may expect them)
+        val gson = com.google.gson.GsonBuilder()
+            .serializeNulls()
+            .create()
+
         val retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
 
         // Create API instances
         authApi = retrofit.create(AuthApi::class.java)
         profileApi = retrofit.create(ProfileApi::class.java)
         donationApi = retrofit.create(DonationApi::class.java)
+        campaignApi = retrofit.create(CampaignApi::class.java)
 
         isInitialized = true
     }

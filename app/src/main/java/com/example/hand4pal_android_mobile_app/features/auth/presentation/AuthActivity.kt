@@ -70,6 +70,24 @@ class AuthActivity : AppCompatActivity() {
         }
     }
 
+    suspend fun saveUserRole(role: String) {
+        dataStore.edit { preferences ->
+            preferences[DataStoreKeys.USER_ROLE_KEY] = role
+        }
+    }
+
+    suspend fun saveUserId(userId: String) {
+        dataStore.edit { preferences ->
+            preferences[DataStoreKeys.USER_ID_KEY] = userId
+        }
+    }
+
+    suspend fun saveUserEmail(email: String) {
+        dataStore.edit { preferences ->
+            preferences[DataStoreKeys.USER_EMAIL_KEY] = email
+        }
+    }
+
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
         return true

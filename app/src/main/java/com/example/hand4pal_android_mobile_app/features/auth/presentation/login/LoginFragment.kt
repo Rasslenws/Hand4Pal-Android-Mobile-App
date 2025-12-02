@@ -110,10 +110,14 @@ class LoginFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.loginResponse.collect { response ->
                 if (response != null) {
-                    // Save token
-                    (requireActivity() as AuthActivity).saveToken(response.token)
+                    val authActivity = requireActivity() as AuthActivity
+                    // Save token and user info
+                    authActivity.saveToken(response.token)
+                    authActivity.saveUserRole(response.role)
+                    authActivity.saveUserId(response.userId.toString())
+                    authActivity.saveUserEmail(response.email)
                     // Navigate to main
-                    (requireActivity() as AuthActivity).navigateToMain()
+                    authActivity.navigateToMain()
                 }
             }
         }
